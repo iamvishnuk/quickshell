@@ -44,6 +44,7 @@ Scope {
                 spacing: 10
 
 
+                NotificationWidget {}
                 BluetoothWidget {}
                 NetworkWidget {}
                 VolumeWidget {}

@@ -79,7 +79,6 @@ RowLayout {
 
                         property string normalizedAppId: {
                             const id = appId.toLowerCase()
-                            console.log("-->", id)
                             if (id.includes("youtube.com")) {
                                 return "youtube"
                             }
