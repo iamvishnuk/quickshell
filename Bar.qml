@@ -49,6 +49,7 @@ Scope {
                 spacing: 10
 
 
+                SpotifyWidget {}
                 SystemMonitor {}
                 NotificationWidget {
                     service: notificationService
