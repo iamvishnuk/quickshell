@@ -2,8 +2,13 @@ import Quickshell
 import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
+import "./notification"
 
 Scope {
+    NotificationService {
+        id: notificationService
+    }
+
     Variants {
         model: Quickshell.screens
 
@@ -44,7 +49,11 @@ Scope {
                 spacing: 10
 
 
-                NotificationWidget {}
+                SystemMonitor {}
+                NotificationWidget {
+                    service: notificationService
+                    showToast: modelData === Quickshell.screens[0]
+                }
                 BluetoothWidget {}
                 NetworkWidget {}
                 VolumeWidget {}

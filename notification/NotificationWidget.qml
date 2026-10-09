@@ -11,61 +11,21 @@ RowLayout {
   Layout.preferredWidth: 20
   Layout.preferredHeight: 30
 
-  property bool dnd: false
-  property int dndDuration: 0
+  required property var service
+  required property bool showToast
 
-  function enableDnd(minutes) {
-    root.dnd = true
-    root.dndDuration = minutes
-
-    if (minutes > 0) {
-      dndTimer.restart()
-    }
-  }
-
-  function disableDnd() {
-    root.dnd = false
-    root.dndDuration = 0
-
-    dndTimer.stop()
-  }
-
-  function toggleDnd() {
-    if (root.dnd) {
-      disableDnd()
-    } else {
-      enableDnd()
-    }
-  }
-
-  function clearNotification() {
-    const notifications = notificationServer.trackedNotifications.values.slice()
-
-    for (const n of notifications) {
-      n.dismiss()
-    }
-  }
-
-  Timer {
-    id: dndTimer
-    interval: root.dndDuration * 60 * 1000
-    repeat: false
-
-    onTriggered: {
-      root.dnd = false
-      root.dndDuration = 0
-    }
-  }
+  // property bool dnd: false
+  // property int dndDuration: 0
 
   Text {
     id: notificationIcon
     anchors.centerIn: parent
-    text: root.dnd ? "󰂛" : "󰂚"
-    color: root.dnd ? "red" : "white"
+    text: service.dnd ? "󰂛" : "󰂚"
+    color: service.dnd ? "red" : "white"
 
     font {
       family: "JetBrainsMono Nerd Font"
-      pixelSize: 15
+      pixelSize: 14
     }
   }
 
@@ -75,25 +35,6 @@ RowLayout {
     cursorShape: Qt.PointingHandCursor
     onClicked: {
       notificationPopup.visible = !notificationPopup.visible
-    }
-  }
-
-  NotificationServer {
-    id: notificationServer
-    bodySupported: true
-    imageSupported: true
-    actionsSupported: true
-
-    onNotification: n => {
-      n.tracked = true
-
-      if (root.dnd) return
-
-      notificationToast.notification = n
-
-      notificationToast.visible = true
-
-      toastTimer.restart()
     }
   }
 
@@ -137,8 +78,8 @@ RowLayout {
           }
 
           Text {
-            text: notificationServer.trackedNotifications.length;
-            visible: notificationServer.trackedNotifications.length > 0
+            text: service.trackedNotifications.length;
+            visible: service.trackedNotifications.length > 0
             color: "#a6adc8"
             font {
               family: "JetBrainsMono Nerd Font"
@@ -154,8 +95,8 @@ RowLayout {
 
             Text {
               anchors.centerIn: parent
-              text: root.dnd ? "󰂛" : "󰂚"
-              color: root?.dnd ? "red" : "white"
+              text: service.dnd ? "󰂛" : "󰂚"
+              color: service.dnd ? "red" : "white"
               font {
                 family: "JetBrainsMono Nerd Font"
                 pixelSize: 15
@@ -166,7 +107,7 @@ RowLayout {
               anchors.fill: parent
               cursorShape: Qt.PointingHandCursor
               onClicked: {
-                root.toggleDnd()
+                service.toggleDnd()
               }
             }
           }
@@ -190,7 +131,7 @@ RowLayout {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
-                  root.clearNotification()
+                  service.clearNotifications()
                 }
               }
             }
@@ -207,7 +148,7 @@ RowLayout {
           Layout.fillWidth: true
           Layout.fillHeight: true
 
-          visible: notificationServer.trackedNotifications.values.length === 0
+          visible: service.trackedNotifications.values.length === 0
 
           // Text {
           //   anchors.centerIn: parent
@@ -227,12 +168,12 @@ RowLayout {
           Layout.fillWidth: true
           Layout.fillHeight: true
 
-          model: notificationServer.trackedNotifications
+          model: service.trackedNotifications
 
           spacing: 8
           clip: true
 
-          // visible: notificationServer.trackedNotifications.values.length > 0
+          // visible: service.trackedNotifications.values.length > 0
 
           delegate: Rectangle {
             required property var modelData
@@ -325,11 +266,13 @@ RowLayout {
     implicitHeight: 100
 
     color: "transparent"
+    visible: false
 
     Rectangle {
       anchors.fill: parent
       radius: 5
       color: "#1e1e2e"
+      clip: true
       border {
         width: 1
         color: "#45475a"
@@ -415,5 +358,19 @@ RowLayout {
       }
     }
     
+  }
+
+  Connections {
+    target: root.service
+
+    function onNotificationReceived(notification) {
+      if (root.service.dnd || !root.showToast)
+        return
+
+      notificationToast.notification = notification
+      notificationToast.visible = true
+
+      toastTimer.restart()
+    }
   }
 }
