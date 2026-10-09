@@ -26,10 +26,6 @@ Scope {
 
             implicitHeight: 30
 
-            ClockWidget {
-                anchors.centerIn: parent
-            }
-
             WorkspaceWidget {
                 anchors {
                     verticalCenter: parent.verticalCenter
@@ -39,6 +35,20 @@ Scope {
 
                 currentScreen: modelData
             }
+
+            RowLayout {
+                anchors {
+                    horizontalCenter: parent.horizontalCenter
+                    verticalCenter: parent.verticalCenter
+                }
+
+                spacing: 10
+
+                ClockWidget {}
+                WeatherWidget {}
+            }
+
+
 
             RowLayout {
                 anchors {
