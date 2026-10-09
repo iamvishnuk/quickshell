@@ -60,6 +60,7 @@ Scope {
 
 
                 SpotifyWidget {}
+                RecordingIndicator {}
                 SystemMonitor {}
                 NotificationWidget {
                     service: notificationService
