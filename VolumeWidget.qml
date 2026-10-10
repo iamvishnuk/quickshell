@@ -35,17 +35,17 @@ RowLayout {
   // Dynamically discover output sinks.
   readonly property var outputDevices: {
     const nodes = Pipewire.nodes.values
-    const availabeNodes = nodes.filter(node =>
+    return nodes.filter(node =>
       node &&
       node.isSink &&
       !node.isStream &&
       node.audio
     )
-    console.log("--->",availabeNodes[1].name)
-    console.log("--->",availabeNodes[1].description)
-    console.log("--->",availabeNodes[1].nickname)
+  }
 
-    return availabeNodes
+  readonly property var inputDevices: {
+    const node = Pipewire.nodes.values
+    return node.filter(node => node && !node.isSink && node.audio && !node.isStream)
   }
 
   Process {
@@ -91,14 +91,14 @@ RowLayout {
   PopupWindow {
     id: volumePopup
     anchor.item: root
-    grabFocus: true
-    // visible: true
+    // grabFocus: true
+    visible: true
 
     anchor.rect.x : root.width / 2 - width / 2
     anchor.rect.y : root.height + 5
 
     width: 280
-    height: 180
+    height: 300
 
     color: "transparent"
 
@@ -117,7 +117,6 @@ RowLayout {
           fill: parent
           margins: 14
         }
-
         spacing: 5
 
         RowLayout {
@@ -167,7 +166,6 @@ RowLayout {
           }
         }
 
-
         Rectangle {
           Layout.fillWidth: true
           height: 1
@@ -175,7 +173,7 @@ RowLayout {
         }
 
         ColumnLayout {
-          Layout.fillWidth: parent
+          Layout.fillWidth: true
           spacing: 10
 
           Text {
@@ -419,6 +417,181 @@ RowLayout {
               text: `${root.vol}%`
               color: "white"
               horizontalAlignment: Text.AlignRight
+            }
+          }
+        }
+
+        Rectangle {
+          Layout.fillWidth: true
+          height: 1
+          color: "#313244"
+        }
+
+        ColumnLayout {
+          Layout.fillWidth: true
+          spacing: 10
+
+          Text {
+            text: "Input Devices"
+            color: "#a9b1d6"
+            font.pixelSize: 12
+            font.family: "Inter"
+          }
+
+          ComboBox {
+            id: inputSelector
+
+            Layout.fillWidth: true
+            implicitHeight: 36
+
+            model: root.inputDevices
+            textRole: "description"
+
+            // Closed selector
+            background: Rectangle {
+              radius: 6
+              color: inputSelector.hovered
+              ? "#292e42"
+              : "#24283b"
+
+              border.color: inputSelector.activeFocus
+              ? "#7aa2f7"
+              : "#414868"
+
+              border.width: 1
+            }
+
+            // Selected output text
+            contentItem: Text {
+              leftPadding: 10
+              rightPadding: 30
+
+              text: inputSelector.displayText
+              color: "#c0caf5"
+
+              font.family: "Inter"
+              font.pixelSize: 12
+
+              verticalAlignment: Text.AlignVCenter
+              elide: Text.ElideRight
+            }
+
+            // Dropdown arrow
+            indicator: Text {
+              x: inputSelector.width - width - 10
+              y: (inputSelector.height - height) / 2
+
+              text: inputSelector.popup.visible ? "󰅃" : "󰅀"
+              color: "#7aa2f7"
+
+              font.family: "Inter"
+              font.pixelSize: 14
+            }
+
+            // Dropdown menu
+            popup: Popup {
+              y: inputSelector.height + 4
+              width: inputSelector.width
+              padding: 4
+
+              implicitHeight: Math.min(
+                contentItem.implicitHeight + padding * 2,
+                180
+              )
+
+              contentItem: ListView {
+                clip: true
+                implicitHeight: contentHeight
+                model: inputSelector.popup.visible
+                ? inputSelector.delegateModel
+                : null
+
+                currentIndex: inputSelector.highlightedIndex
+
+                ScrollIndicator.vertical: ScrollIndicator {}
+              }
+
+              background: Rectangle {
+                color: "#1a1b26"
+                radius: 6
+                border.color: "#414868"
+                border.width: 1
+              }
+            }
+
+            delegate: ItemDelegate {
+              required property var modelData
+              required property int index
+
+              width: inputSelector.width
+              height: 34
+
+              highlighted: inputSelector.highlightedIndex === index
+
+              background: Rectangle {
+                radius: 4
+
+                color: parent.highlighted
+                ? "#292e42"
+                : "transparent"
+              }
+
+              contentItem: RowLayout {
+                spacing: 8
+
+                Text {
+                  text: ""
+                  color: parent.parent.highlighted
+                  ? "#7aa2f7"
+                  : "#565f89"
+
+                  font.family: "JetBrainsMono Nerd Font"
+                  font.pixelSize: 14
+                }
+
+                Text {
+                  Layout.fillWidth: true
+
+                  text: modelData.nickname ||
+                  modelData.description ||
+                  modelData.name ||
+                  "Audio output"
+
+                  color: parent.parent.highlighted
+                  ? "#c0caf5"
+                  : "#a9b1d6"
+
+                  font.family: "Inter"
+                  font.pixelSize: 12
+
+                  elide: Text.ElideRight
+                }
+
+                Text {
+                  visible: modelData === root.sink
+                  text: "󰄬"
+                  color: "#9ece6a"
+
+                  font.family: "JetBrainsMono Nerd Font"
+                  font.pixelSize: 14
+                }
+              }
+
+              onClicked: {
+                inputSelector.currentIndex = index
+                Pipewire.preferredDefaultAudioSink = modelData
+                inputSelector.popup.close()
+              }
+            }
+
+            displayText: {
+              if (!root.ready)
+              return "No inut available"
+
+              return root.source.nickname ||
+              root.source.description ||
+              root.source.name ||
+              "Audio input"
             }
           }
         }
