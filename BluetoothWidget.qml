@@ -9,45 +9,55 @@ RowLayout {
     Layout.preferredWidth: 20
     Layout.preferredHeight: 30
 
-    property BluetoothAdapter adapter: Bluetooth.defaultAdapter
+    property var adapter: Bluetooth.defaultAdapter
+
     readonly property bool available: adapter !== null && adapter !== undefined
-    readonly property bool enabled: available && adapter.enabled
+    readonly property bool bluetoothEnabled: available && adapter.enabled
     readonly property bool discovering: available && adapter.discovering
     readonly property var devices: available ? adapter.devices.values : []
     readonly property var connectedDevices: devices.filter(device => device.connected)
     readonly property int connectedCount: connectedDevices.length
-    readonly property string icon: { if (!root.available) return "󰂲"
+    readonly property string icon: {
+        if (!root.available)
+            return "󰂲";
 
-        if (!root.enabled) return "󰂲"
-        if (root.connectedCount > 0) return "󰂱"
+        if (!root.bluetoothEnabled)
+            return "󰂲";
+        if (root.connectedCount > 0)
+            return "󰂱";
 
-        return "󰂯"
+        return "󰂯";
     }
 
     // ============================================================
     // BAR BUTTON
     // ============================================================
 
+    Item {
+        Layout.preferredWidth: 20
+        Layout.preferredHeight: 30
 
+        Text {
+            id: bluetoothIcon
 
-    Text {
-        id: bluetoothIcon
-        anchors.centerIn: parent
-        text: root.icon
-        color: root.enabled ? "white" : "#777777"
+            anchors.centerIn: parent
 
-        font {
-            family: "JetBrainsMono Nerd Font"
-            pixelSize: 15
+            text: root.icon
+            color: root.bluetoothEnabled ? "white" : "#777777"
+
+            font {
+                family: "JetBrainsMono Nerd Font"
+                pixelSize: 15
+            }
         }
-    }
 
-    MouseArea {
-        id: bluetoothMouse
-        anchors.fill: parent
-        cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            bluetoothPopup.visible = !bluetoothPopup.visible
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+
+            onClicked: {
+                bluetoothPopup.visible = !bluetoothPopup.visible;
+            }
         }
     }
 
@@ -62,8 +72,8 @@ RowLayout {
         anchor.rect.x: root.width / 2 - width / 2
         anchor.rect.y: root.height - 5
 
-        width: 360
-        height: 430
+        implicitWidth: 360
+        implicitHeight: 430
         color: "transparent"
         grabFocus: true
 
@@ -90,7 +100,7 @@ RowLayout {
                     spacing: 10
                     Text {
                         text: root.icon
-                        color: root.enabled ? "white" : "#666666"
+                        color: root.bluetoothEnabled ? "white" : "#666666"
                         font {
                             family: "JetBrainsMono Nerd Font"
                             pixelSize: 21
@@ -112,11 +122,15 @@ RowLayout {
 
                         Text {
                             text: {
-                                if (!root.available) return "Bluetooth unavailable"
-                                if (!root.enabled) return "Bluetooth disabled"
-                                if (root.connectedCount === 0) return "No devices connected"
-                                if (root.connectedCount === 1) return "1 device connected"
-                                return root.connectedCount + " devices connected"
+                                if (!root.available)
+                                    return "Bluetooth unavailable";
+                                if (!root.enabled)
+                                    return "Bluetooth disabled";
+                                if (root.connectedCount === 0)
+                                    return "No devices connected";
+                                if (root.connectedCount === 1)
+                                    return "1 device connected";
+                                return root.connectedCount + " devices connected";
                             }
                             color: "#888888"
                             font {
@@ -127,23 +141,23 @@ RowLayout {
                     }
 
                     Item {
-                      Layout.fillWidth: true
+                        Layout.fillWidth: true
                     }
 
                     // POWER TOGGLE
                     Rectangle {
-                        width: 42
-                        height: 22
+                        implicitWidth: 42
+                        implicitHeight: 22
                         radius: 11
-                        color: root.enabled ? "#75f1fa" : "#333333"
+                        color: root.bluetoothEnabled ? "#75f1fa" : "#333333"
 
                         Rectangle {
                             width: 16
                             height: 16
                             radius: 8
                             anchors.verticalCenter: parent.verticalCenter
-                            x: root.enabled ? parent.width - width - 3 : 3
-                            color: root.enabled ? "#111111" : "#888888"
+                            x: root.bluetoothEnabled ? parent.width - width - 3 : 3
+                            color: root.bluetoothEnabled ? "#111111" : "#888888"
 
                             Behavior on x {
                                 NumberAnimation {
@@ -156,9 +170,9 @@ RowLayout {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
-                              if (root.available) {
-                                root.adapter.enabled = !root.adapter.enabled
-                              }
+                                if (root.available) {
+                                    root.adapter.enabled = !root.adapter.enabled;
+                                }
                             }
                         }
                     }
@@ -170,18 +184,12 @@ RowLayout {
 
                 Text {
                     text: "CONNECTED"
-
-                    visible:
-                        root.connectedCount > 0
-
+                    visible: root.connectedCount > 0
                     color: "#777777"
 
                     font {
-                        family:
-                            "JetBrainsMono Nerd Font"
-
+                        family: "JetBrainsMono Nerd Font"
                         pixelSize: 9
-
                         bold: true
                     }
                 }
@@ -192,10 +200,11 @@ RowLayout {
                     spacing: 4
 
                     Repeater {
-                        model:
-                            root.connectedDevices
+                        model: root.connectedDevices
 
                         delegate: Rectangle {
+                            id: connectedDeviceDelegate
+
                             required property var modelData
 
                             Layout.fillWidth: true
@@ -215,64 +224,37 @@ RowLayout {
                                 spacing: 10
 
                                 Text {
-                                    text:
-                                        modelData.icon
-                                        ? "󰂱"
-                                        : "󰂯"
-
+                                    text: connectedDeviceDelegate.modelData.icon ? "󰂱" : "󰂯"
                                     color: "#75f1fa"
-
                                     font {
-                                        family:
-                                            "JetBrainsMono Nerd Font"
-
+                                        family: "JetBrainsMono Nerd Font"
                                         pixelSize: 17
                                     }
                                 }
 
                                 ColumnLayout {
                                     Layout.fillWidth: true
-
                                     spacing: 2
 
                                     Text {
                                         Layout.fillWidth: true
-
-                                        text:
-                                            modelData.name ||
-                                            modelData.deviceName
-
+                                        text: connectedDeviceDelegate.modelData.name || connectedDeviceDelegate.modelData.deviceName
                                         color: "white"
-
-                                        elide:
-                                            Text.ElideRight
+                                        elide: Text.ElideRight
 
                                         font {
-                                            family:
-                                                "JetBrainsMono Nerd Font"
-
+                                            family: "JetBrainsMono Nerd Font"
                                             pixelSize: 10
-
                                             bold: true
                                         }
                                     }
 
                                     Text {
-                                        text:
-                                            modelData.batteryAvailable
-                                            ? "Connected • " +
-                                              Math.round(
-                                                  modelData.battery * 100
-                                              ) +
-                                              "%"
-                                            : "Connected"
+                                        text: connectedDeviceDelegate.modelData.batteryAvailable ? "Connected • " + Math.round(connectedDeviceDelegate.modelData.battery * 100) + "%" : "Connected"
 
                                         color: "#7ddc9a"
-
                                         font {
-                                            family:
-                                                "JetBrainsMono Nerd Font"
-
+                                            family: "JetBrainsMono Nerd Font"
                                             pixelSize: 8
                                         }
                                     }
@@ -280,24 +262,16 @@ RowLayout {
 
                                 Text {
                                     text: "Disconnect"
-
                                     color: "#ff7777"
-
                                     font {
-                                        family:
-                                            "JetBrainsMono Nerd Font"
-
+                                        family: "JetBrainsMono Nerd Font"
                                         pixelSize: 9
                                     }
 
                                     MouseArea {
                                         anchors.fill: parent
-
-                                        cursorShape:
-                                            Qt.PointingHandCursor
-
-                                        onClicked:
-                                            modelData.disconnect()
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: connectedDeviceDelegate.modelData.disconnect()
                                     }
                                 }
                             }
@@ -311,55 +285,32 @@ RowLayout {
 
                 Rectangle {
                     Layout.fillWidth: true
-
-                    height: 34
-
+                    implicitHeight: 34
                     radius: 6
-
-                    color:
-                        scanMouse.containsMouse
-                        ? "#303030"
-                        : "#222222"
+                    color: scanMouse.containsMouse ? "#303030" : "#222222"
 
                     Text {
                         anchors.centerIn: parent
-
-                        text:
-                            root.discovering
-                            ? "󰑐  Scanning..."
-                            : "󰂰  Scan for devices"
-
-                        color:
-                            root.enabled
-                            ? "white"
-                            : "#555555"
+                        text: root.discovering ? "󰑐  Scanning..." : "󰂰  Scan for devices"
+                        color: root.bluetoothEnabled ? "white" : "#555555"
 
                         font {
-                            family:
-                                "JetBrainsMono Nerd Font"
-
+                            family: "JetBrainsMono Nerd Font"
                             pixelSize: 10
                         }
                     }
 
                     MouseArea {
                         id: scanMouse
-
                         anchors.fill: parent
-
                         hoverEnabled: true
-
-                        enabled:
-                            root.enabled
-
-                        cursorShape:
-                            Qt.PointingHandCursor
-
+                        enabled: root.bluetoothEnabled
+                        cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             if (root.discovering) {
-                                root.adapter.discovering = false
+                                root.adapter.discovering = false;
                             } else {
-                                root.adapter.discovering = true
+                                root.adapter.discovering = true;
                             }
                         }
                     }
@@ -370,58 +321,38 @@ RowLayout {
                 // ==================================================
 
                 Text {
-                    text:
-                        root.discovering
-                        ? "AVAILABLE DEVICES"
-                        : "DEVICES"
-
+                    text: root.discovering ? "AVAILABLE DEVICES" : "DEVICES"
                     color: "#777777"
-
                     font {
-                        family:
-                            "JetBrainsMono Nerd Font"
-
+                        family: "JetBrainsMono Nerd Font"
                         pixelSize: 9
-
                         bold: true
                     }
                 }
 
                 Rectangle {
                     Layout.fillWidth: true
-
                     Layout.fillHeight: true
 
                     radius: 8
-
                     color: "#101010"
 
                     ListView {
                         anchors.fill: parent
-
                         anchors.margins: 4
-
                         clip: true
-
                         spacing: 2
-
-                        model:
-                            root.devices
+                        model: root.devices
 
                         delegate: Rectangle {
+                            id: deviceDelegate
+
                             required property var modelData
-
-                            width:
-                                ListView.view.width
-
+                            width: ListView.view.width
                             height: 56
-
                             radius: 6
 
-                            color:
-                                deviceMouse.containsMouse
-                                ? "#252525"
-                                : "transparent"
+                            color: deviceMouse.containsMouse ? "#252525" : "transparent"
 
                             RowLayout {
                                 anchors.fill: parent
@@ -435,23 +366,17 @@ RowLayout {
 
                                 Text {
                                     text: {
-                                        if (modelData.connected)
-                                            return "󰂱"
-
-                                        if (modelData.paired)
-                                            return "󰂯"
-
-                                        return "󰂯"
+                                        if (deviceDelegate.modelData.connected)
+                                            return "󰂱";
+                                        if (deviceDelegate.modelData.paired)
+                                            return "󰂯";
+                                        return "󰂯";
                                     }
 
-                                    color:
-                                        modelData.connected
-                                        ? "#75f1fa"
-                                        : "#888888"
+                                    color: deviceDelegate.modelData.connected ? "#75f1fa" : "#888888"
 
                                     font {
-                                        family:
-                                            "JetBrainsMono Nerd Font"
+                                        family: "JetBrainsMono Nerd Font"
 
                                         pixelSize: 16
                                     }
@@ -466,56 +391,35 @@ RowLayout {
 
                                     Text {
                                         Layout.fillWidth: true
-
-                                        text:
-                                            modelData.name ||
-                                            modelData.deviceName ||
-                                            "Unknown device"
-
+                                        text: deviceDelegate.modelData.name || deviceDelegate.modelData.deviceName || "Unknown device"
                                         color: "white"
-
-                                        elide:
-                                            Text.ElideRight
+                                        elide: Text.ElideRight
 
                                         font {
-                                            family:
-                                                "JetBrainsMono Nerd Font"
-
+                                            family: "Inter"
                                             pixelSize: 10
-
-                                            bold:
-                                                modelData.connected
+                                            bold: deviceDelegate.modelData.connected
                                         }
                                     }
 
                                     Text {
                                         text: {
-                                            if (modelData.pairing)
-                                                return "Pairing..."
+                                            if (deviceDelegate.modelData.pairing)
+                                                return "Pairing...";
 
-                                            if (modelData.connected)
-                                                return modelData.batteryAvailable
-                                                    ? "Connected • " +
-                                                      Math.round(
-                                                          modelData.battery * 100
-                                                      ) +
-                                                      "%"
-                                                    : "Connected"
+                                            if (deviceDelegate.modelData.connected)
+                                                return deviceDelegate.modelData.batteryAvailable ? "Connected • " + Math.round(deviceDelegate.modelData.battery * 100) + "%" : "Connected";
 
-                                            if (modelData.paired)
-                                                return "Paired"
+                                            if (deviceDelegate.modelData.paired)
+                                                return "Paired";
 
-                                            return "Available"
+                                            return "Available";
                                         }
 
-                                        color:
-                                            modelData.connected
-                                            ? "#7ddc9a"
-                                            : "#777777"
+                                        color: deviceDelegate.modelData.connected ? "#7ddc9a" : "#777777"
 
                                         font {
-                                            family:
-                                                "JetBrainsMono Nerd Font"
+                                            family: "JetBrainsMono Nerd Font"
 
                                             pixelSize: 8
                                         }
@@ -526,29 +430,20 @@ RowLayout {
 
                                 Text {
                                     text: {
-                                        if (modelData.pairing)
-                                            return "..."
-
-                                        if (modelData.connected)
-                                            return "Disconnect"
-
-                                        if (modelData.paired)
-                                            return "Connect"
-
-                                        return "Pair"
+                                        if (deviceDelegate.modelData.pairing)
+                                            return "...";
+                                        if (deviceDelegate.modelData.connected)
+                                            return "Disconnect";
+                                        if (deviceDelegate.modelData.paired)
+                                            return "Connect";
+                                        return "Pair";
                                     }
 
-                                    color:
-                                        modelData.connected
-                                        ? "#ff7777"
-                                        : "#75f1fa"
+                                    color: deviceDelegate.modelData.connected ? "#ff7777" : "#75f1fa"
 
                                     font {
-                                        family:
-                                            "JetBrainsMono Nerd Font"
-
+                                        family: "Inter"
                                         pixelSize: 9
-
                                         bold: true
                                     }
                                 }
@@ -561,25 +456,17 @@ RowLayout {
 
                                 hoverEnabled: true
 
-                                cursorShape:
-                                    Qt.PointingHandCursor
+                                cursorShape: Qt.PointingHandCursor
 
                                 onClicked: {
-
-                                    if (modelData.pairing)
-                                        return
-
-                                    if (modelData.connected) {
-
-                                        modelData.disconnect()
-
-                                    } else if (modelData.paired) {
-
-                                        modelData.connect()
-
+                                    if (deviceDelegate.modelData.pairing)
+                                        return;
+                                    if (deviceDelegate.modelData.connected) {
+                                        deviceDelegate.modelData.disconnect();
+                                    } else if (deviceDelegate.modelData.paired) {
+                                        deviceDelegate.modelData.connect();
                                     } else {
-
-                                        modelData.pair()
+                                        deviceDelegate.modelData.pair();
                                     }
                                 }
                             }
@@ -590,24 +477,22 @@ RowLayout {
                         Text {
                             anchors.centerIn: parent
 
-                            visible:
-                                root.devices.length === 0
+                            visible: root.devices.length === 0
 
                             text: {
-                                if (!root.enabled)
-                                    return "Bluetooth is disabled"
+                                if (!root.bluetoothEnabled)
+                                    return "Bluetooth is disabled";
 
                                 if (root.discovering)
-                                    return "Searching for devices..."
+                                    return "Searching for devices...";
 
-                                return "No devices found"
+                                return "No devices found";
                             }
 
                             color: "#666666"
 
                             font {
-                                family:
-                                    "JetBrainsMono Nerd Font"
+                                family: "JetBrainsMono Nerd Font"
 
                                 pixelSize: 10
                             }
@@ -625,31 +510,24 @@ RowLayout {
                     Text {
                         Layout.fillWidth: true
 
-                        text:
-                            root.available
-                            ? root.adapter.name
-                            : "No adapter"
+                        text: root.available ? root.adapter.name : "No adapter"
 
                         color: "#555555"
 
                         font {
-                            family:
-                                "JetBrainsMono Nerd Font"
+                            family: "JetBrainsMono Nerd Font"
 
                             pixelSize: 8
                         }
                     }
 
                     Text {
-                        text:
-                            root.devices.length +
-                            " devices"
+                        text: root.devices.length + " devices"
 
                         color: "#555555"
 
                         font {
-                            family:
-                                "JetBrainsMono Nerd Font"
+                            family: "JetBrainsMono Nerd Font"
 
                             pixelSize: 8
                         }

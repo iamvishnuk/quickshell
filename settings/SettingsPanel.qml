@@ -11,7 +11,6 @@ PanelWindow {
   implicitHeight: 500
 
   visible: false
-  anchors.right : true
 
   color: "transparent"
   exclusionMode: ExclusionMode.Ignore
