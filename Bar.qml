@@ -1,8 +1,8 @@
 import Quickshell
-import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 import "./notification"
+import "./settings"
 
 Scope {
     NotificationService {
@@ -48,30 +48,37 @@ Scope {
                 WeatherWidget {}
             }
 
-
-
             RowLayout {
                 anchors {
                     right: parent.right
                     verticalCenter: parent.verticalCenter
                     rightMargin: 5
                 }
-                spacing: 10
 
+                spacing: 10
 
                 SpotifyWidget {}
                 RecordingIndicator {}
                 SystemMonitor {}
+
                 NotificationWidget {
                     service: notificationService
                     showToast: modelData === Quickshell.screens[0]
                 }
+
                 BluetoothWidget {}
                 NetworkWidget {}
                 VolumeWidget {}
                 BatteryWidget {}
+                SettingsIcon {
+                    settingsPanel: settingsPanelWindow
+                }
                 PowerWidget {}
 
+            }
+
+            SettingsPanel {
+                id: settingsPanelWindow
             }
         }
     }

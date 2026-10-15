@@ -91,8 +91,7 @@ RowLayout {
   PopupWindow {
     id: volumePopup
     anchor.item: root
-    // grabFocus: true
-    visible: true
+    grabFocus: true
 
     anchor.rect.x : root.width / 2 - width / 2
     anchor.rect.y : root.height + 5

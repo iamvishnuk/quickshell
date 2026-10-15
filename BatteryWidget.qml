@@ -22,10 +22,10 @@ RowLayout {
 	}
 
 	Text {
-		anchors.centerIn: parent
+		Layout.alignment: Qt.AlignCenter
 
-		text: icon
-		color: charging ? "#7ad9a8" : level <= 15 ? "#ff5048" : level <=30 ? "#ffa478" : "#7ad9a8"
+		text: root.icon
+		color: root.charging ? "#7ad9a8" : root.level <= 15 ? "#ff5048" : root.level <=30 ? "#ffa478" : "#7ad9a8"
 
 		font {
       family: "JetBrainsMono Nerd Font"

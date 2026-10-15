@@ -88,7 +88,9 @@ RowLayout {
                             if (id.includes("hotstar.com")) {
                                 return "hotstar"
                             }
-
+                            if (id.includes("whatsapp.com")) {
+                                return "whatsapp"
+                            }
                             return appId
                         }
 
@@ -115,6 +117,8 @@ RowLayout {
                                     return "file:///home/vishnu/.local/share/icons/hicolor/scalable/apps/tradingview.svg"
                                 case "hotstar":
                                     return "file:///home/vishnu/.local/share/icons/hicolor/scalable/apps/hotstar.webp"
+                                case "whatsapp":
+                                    return "file:///home/vishnu/.config/quickshell/assets/whatsapp.png"
                                 default:
                                     return ""
                             }
