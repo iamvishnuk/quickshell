@@ -29,4 +29,3 @@ Rectangle {
         onClicked: settingIcon.settingsPanel.visible = true
     }
 }
-
