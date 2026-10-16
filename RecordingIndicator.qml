@@ -1,4 +1,3 @@
-import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
 import QtQuick
@@ -20,17 +19,15 @@ Item {
 
         stdout: StdioCollector {
             onStreamFinished: {
-                const result = text.trim().toLowerCase()
-                root.recording =
-                    result === "true" ||
-                    result.includes('"outputactive":true') ||
-                    result.includes("recording is active")
+                const result = text.trim().toLowerCase();
+                root.recording = result === "true" || result.includes('"outputactive":true') || result.includes("recording is active");
             }
         }
 
         onExited: (exitCode, exitStatus) => {
-            if (exitCode !== 0)
-                root.recording = false
+            if (exitCode !== 0) {
+                root.recording = false;
+            }
         }
     }
 
@@ -40,8 +37,9 @@ Item {
         repeat: true
 
         onTriggered: {
-            if (!statusProcess.running)
-                statusProcess.running = true
+            if (!statusProcess.running) {
+                statusProcess.running = true;
+            }
         }
     }
 
