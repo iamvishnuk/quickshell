@@ -35,8 +35,8 @@ Item {
         anchor.item: root
         anchor.rect.x: root.width / 2 - width / 2
         anchor.rect.y: root.height + 10
-        width: 300
-        height: 250
+        implicitWidth: 300
+        implicitHeight: 250
         color: 'transparent'
 
         Rectangle {

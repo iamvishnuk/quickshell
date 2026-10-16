@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Layouts
 import "./notification"
 import "./settings"
+import "./components"
 
 Scope {
     NotificationService {
@@ -26,14 +27,18 @@ Scope {
 
             implicitHeight: 30
 
-            WorkspaceWidget {
+            RowLayout {
                 anchors {
                     verticalCenter: parent.verticalCenter
                     left: parent.left
                     leftMargin: 5
                 }
 
-                currentScreen: modelData
+                spacing: 10
+
+                WorkspaceWidget {
+                    currentScreen: modelData
+                }
             }
 
             RowLayout {
@@ -59,6 +64,8 @@ Scope {
 
                 SpotifyWidget {}
                 RecordingIndicator {}
+                DockerIndicator {}
+
                 SystemMonitor {}
 
                 NotificationWidget {
@@ -74,7 +81,6 @@ Scope {
                     settingsPanel: settingsPanelWindow
                 }
                 PowerWidget {}
-
             }
 
             SettingsPanel {
