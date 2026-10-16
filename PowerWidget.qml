@@ -1,7 +1,6 @@
 import Quickshell
 import Quickshell.Io
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 
 RowLayout {
@@ -25,23 +24,28 @@ RowLayout {
         command: ["hyprlock"]
     }
 
-    Text {
-        anchors.centerIn: parent
-        text: "󰐥"
-        color: mouseArea.containsMouse ? "white" : "red"
+    Item {
+        Layout.preferredHeight: 30
+        Layout.preferredWidth: 20
 
-        font {
-            family: "JetBrainsMono Nerd Font"
-            pixelSize: 14
+        Text {
+            anchors.centerIn: parent
+            text: "󰐥"
+            color: mouseArea.containsMouse ? "white" : "red"
+
+            font {
+                family: "JetBrainsMono Nerd Font"
+                pixelSize: 14
+            }
         }
-    }
 
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        hoverEnabled: true
-        onClicked: {
-            powerPopup.visible = !powerPopup.visible
+        MouseArea {
+            id: mouseArea
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: {
+                powerPopup.visible = !powerPopup.visible;
+            }
         }
     }
 
@@ -54,8 +58,8 @@ RowLayout {
         anchor.rect.x: root.width / 2 - width / 2
         anchor.rect.y: root.height + 5
 
-        width: 180
-        height: 180
+        implicitWidth: 180
+        implicitHeight: 180
 
         color: "transparent"
 
@@ -108,7 +112,7 @@ RowLayout {
                         hoverEnabled: true
                         anchors.fill: parent
                         onClicked: {
-                            shutdownProcess.running = true
+                            shutdownProcess.running = true;
                         }
                     }
                 }
@@ -131,7 +135,7 @@ RowLayout {
                         hoverEnabled: true
                         anchors.fill: parent
                         onClicked: {
-                            restartProcess.running = true
+                            restartProcess.running = true;
                         }
                     }
                 }
@@ -154,7 +158,7 @@ RowLayout {
                         hoverEnabled: true
                         anchors.fill: parent
                         onClicked: {
-                            lockProcess.running = true
+                            lockProcess.running = true;
                         }
                     }
                 }

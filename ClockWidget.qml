@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import Quickshell
 import QtQuick
 import QtQuick.Controls
@@ -20,10 +21,7 @@ Item {
 
         anchors.fill: parent
 
-        text: Qt.formatDateTime(
-            clock.date,
-            "    ddd,  MMM,  dd,  hh:mm:ss  AP"
-        )
+        text: Qt.formatDateTime(clock.date, "    ddd,  MMM,  dd,  hh:mm:ss  AP")
 
         color: "white"
 
@@ -57,7 +55,7 @@ Item {
                 anchors.fill: parent
                 anchors.topMargin: 5
 
-                spacing:5
+                spacing: 5
 
                 Label {
                     Layout.alignment: Qt.AlignHCenter
@@ -78,6 +76,8 @@ Item {
                     locale: Qt.locale()
 
                     delegate: Text {
+                        required property var model
+
                         horizontalAlignment: Text.AlignHCenter
 
                         text: model.shortName
@@ -112,16 +112,14 @@ Item {
                             bold: model.today
                         }
                     }
-
                 }
             }
-
         }
     }
 
     HoverHandler {
         onHoveredChanged: {
-            calendarPopup.visible = hovered
+            calendarPopup.visible = hovered;
         }
     }
 }
