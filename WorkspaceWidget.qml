@@ -10,16 +10,14 @@ RowLayout {
     spacing: 2
 
     Repeater {
-        model: Hyprland.workspaces.values.filter(
-            ws => ws.monitor?.name === root.currentScreen?.name
-        )
+        model: Hyprland.workspaces.values.filter(ws => ws.monitor?.name === root.currentScreen?.name)
 
         delegate: Rectangle {
             id: workspaceItem
 
             required property var modelData
             property bool isActive: Hyprland.focusedWorkspace?.id === modelData.id
-            property var workspaceWindows: Hyprland.toplevels.values.filter( window => window.workspace?.id === modelData.id)
+            property var workspaceWindows: Hyprland.toplevels.values.filter(window => window.workspace?.id === modelData.id)
 
             radius: 5
 
@@ -64,6 +62,8 @@ RowLayout {
                     model: workspaceItem.workspaceWindows
 
                     delegate: Item {
+                        id: applicationIconDelegate
+
                         required property var modelData
 
                         width: 15
@@ -78,20 +78,20 @@ RowLayout {
                         property string appId: modelData.wayland?.appId || ""
 
                         property string normalizedAppId: {
-                            const id = appId.toLowerCase()
+                            const id = appId.toLowerCase();
                             if (id.includes("youtube.com")) {
-                                return "youtube"
+                                return "youtube";
                             }
                             if (id.includes("tradingview.com")) {
-                                return "tradingview"
+                                return "tradingview";
                             }
                             if (id.includes("hotstar.com")) {
-                                return "hotstar"
+                                return "hotstar";
                             }
                             if (id.includes("whatsapp.com")) {
-                                return "whatsapp"
+                                return "whatsapp";
                             }
-                            return appId
+                            return appId;
                         }
 
                         // ----------------------------------------
@@ -111,16 +111,16 @@ RowLayout {
                         // ----------------------------------------
                         property string customIconPath: {
                             switch (normalizedAppId) {
-                                case "youtube":
-                                    return "file:///home/vishnu/.local/share/icons/hicolor/scalable/apps/youtube.png"
-                                case "tradingview":
-                                    return "file:///home/vishnu/.local/share/icons/hicolor/scalable/apps/tradingview.svg"
-                                case "hotstar":
-                                    return "file:///home/vishnu/.local/share/icons/hicolor/scalable/apps/hotstar.webp"
-                                case "whatsapp":
-                                    return "file:///home/vishnu/.config/quickshell/assets/whatsapp.png"
-                                default:
-                                    return ""
+                            case "youtube":
+                                return "file:///home/vishnu/.local/share/icons/hicolor/scalable/apps/youtube.png";
+                            case "tradingview":
+                                return "file:///home/vishnu/.local/share/icons/hicolor/scalable/apps/tradingview.svg";
+                            case "hotstar":
+                                return "file:///home/vishnu/.local/share/icons/hicolor/scalable/apps/hotstar.webp";
+                            case "whatsapp":
+                                return "file:///home/vishnu/.config/quickshell/assets/whatsapp.png";
+                            default:
+                                return "";
                             }
                         }
 
@@ -128,7 +128,7 @@ RowLayout {
                         // ICON PATH
                         // ----------------------------------------
 
-                        property string iconPath: customIconPath !== "" ? customIconPath : iconName !== "" ? Quickshell.iconPath( iconName) : ""
+                        property string iconPath: customIconPath !== "" ? customIconPath : iconName !== "" ? Quickshell.iconPath(iconName) : ""
 
                         // ----------------------------------------
                         // ICON
@@ -166,13 +166,12 @@ RowLayout {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
-                                modelData.wayland?.activate()
+                                applicationIconDelegate.modelData.wayland?.activate();
                             }
                         }
                     }
                 }
             }
-
         }
     }
 }
