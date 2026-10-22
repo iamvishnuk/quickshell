@@ -21,7 +21,7 @@ RowLayout {
 
     Process {
         id: lockProcess
-        command: ["hyprlock"]
+        command: ["qs", "ipc", "call", "lockscreen", "lock"]
     }
 
     Item {

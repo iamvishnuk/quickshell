@@ -25,6 +25,7 @@ Scope {
                 right: true
             }
 
+
             implicitHeight: 30
 
             RowLayout {
@@ -32,6 +33,8 @@ Scope {
                     verticalCenter: parent.verticalCenter
                     left: parent.left
                     leftMargin: 5
+                    bottomMargin: 5
+                    topMargin: 5
                 }
 
                 spacing: 10
